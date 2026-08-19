@@ -1,0 +1,76 @@
+name: Laporan Bug
+description: Laporkan bug atau error yang kamu temukan saat mengerjakan latihan/tugas
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Terima kasih sudah melaporkan bug! Isi form berikut selengkap mungkin agar bisa diperbaiki cepat.
+
+  - type: dropdown
+    id: file
+    attributes:
+      label: File / Latihan Terkait
+      description: Bagian mana yang bermasalah?
+      options:
+        - dasar.py
+        - pilar-oop.py
+        - praktikum/latihan1.py
+        - praktikum/latihan2.py
+        - praktikum/latihan3.py
+        - praktikum/latihan4.py
+        - praktikum/latihan5.py
+        - praktikum/latihan6.py
+        - Proyek Integrasi (MyEdotel)
+        - Lainnya
+    validations:
+      required: true
+
+  - type: textarea
+    id: ringkasan
+    attributes:
+      label: Ringkasan Bug
+      description: Jelaskan secara singkat apa yang terjadi.
+      placeholder: "Contoh: Error AttributeError saat memanggil hero1.info()"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduksi
+    attributes:
+      label: Langkah Reproduksi
+      description: Langkah-langkah untuk memunculkan bug.
+      placeholder: |
+        1. Jalankan `python pilar-oop.py`
+        2. Ubah baris ke-XX menjadi ...
+        3. Muncul error ...
+      render: bash
+    validations:
+      required: true
+
+  - type: textarea
+    id: ekspektasi
+    attributes:
+      label: Perilaku yang Diharapkan
+      description: Apa yang seharusnya terjadi?
+    validations:
+      required: true
+
+  - type: textarea
+    id: aktual
+    attributes:
+      label: Perilaku Aktual
+      description: Apa yang sebenarnya terjadi? Tempel pesan error lengkap jika ada.
+      render: bash
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS dan versi Python yang kamu pakai.
+      placeholder: "Contoh: Windows 11, Python 3.12.1"
+    validations:
+      required: false

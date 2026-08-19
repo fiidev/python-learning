@@ -1,0 +1,43 @@
+name: Permintaan Fitur
+description: Usulkan fitur baru, solusi latihan, atau perbaikan materi
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ide menarik! Jelaskan fitur yang kamu usulkan supaya mudah dievaluasi.
+
+  - type: textarea
+    id: deskripsi
+    attributes:
+      label: Deskripsi Fitur
+      description: Jelaskan fitur/ide secara jelas dan lengkap.
+      placeholder: "Contoh: Tambahkan file solusi resmi untuk Tugas Analisis 1"
+    validations:
+      required: true
+
+  - type: textarea
+    id: manfaat
+    attributes:
+      label: Alasan / Manfaat
+      description: Kenapa fitur ini penting? Siapa yang diuntungkan?
+    validations:
+      required: true
+
+  - type: textarea
+    id: contoh
+    attributes:
+      label: Contoh Penggunaan (Opsional)
+      description: Pseudocode, struktur file, atau contoh output yang diharapkan.
+      render: python
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatif
+    attributes:
+      label: Alternatif yang Dipertimbangkan (Opsional)
+      description: Solusi lain yang pernah kamu pikirkan.
+    validations:
+      required: false
