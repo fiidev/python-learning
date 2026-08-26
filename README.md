@@ -7,157 +7,151 @@ Dokumen ini berisi rangkuman seluruh tugas analisis dan tantangan proyek dari mo
 ## 1. Tugas Analisis 1 (Latihan 1: Membuat Class Hero)
 
 **Instruksi:**
+
 - Apa yang terjadi jika kamu mengubah `hero1.hp` menjadi `500` setelah baris `hero1 = Hero(...)`?
 - Coba lakukan `print(hero1.hp)`.
+
+**Jawaban & Bukti (`praktikum/latihan1.py`):**
+
+```python
+hero1.hp = 500
+print(hero1.hp) # 500
+```
+
+HP berubah jadi 500 karena `hp` masih public tanpa validasi. Rawan cheat. Solusi: pakai Enkapsulasi `__hp` + setter di latihan 4.
+
+**Output:**
+
+```
+Hero: Layla | HP: 500 | Power: 15
+```
 
 ---
 
 ## 2. Tugas Analisis 2 (Latihan 2: Interaksi Antar Objek)
 
-**Instruksi & Pertanyaan:**
-- Perhatikan parameter `lawan` pada method `serang(self, lawan)`.
-- Parameter tersebut menerima sebuah objek utuh, bukan hanya *string* nama. 
-- **Mengapa ini penting?**
+**Pertanyaan:** Perhatikan parameter `lawan` pada method `serang(self, lawan)`. Parameter tersebut menerima sebuah objek utuh, bukan hanya *string* nama. **Mengapa ini penting?**
+
+**Jawaban (`praktikum/latihan2.py`):**
+Karena dengan objek kita bisa akses SEMUA data & method lawan: `lawan.name`, `lawan.hp`, `lawan.diserang()`. Kalau cuma string, kita tidak bisa kurangi HP lawan.
+
+```python
+def serang(self, lawan):
+    print(f"{self.name} menyerang {lawan.name}!")
+    lawan.diserang(self.attack_power) # butuh objek!
+```
 
 ---
 
 ## 3. Tugas Analisis 3 (Latihan 3: Pewarisan / Inheritance)
 
-**Eksperimen Fungsi `super()`:**
-1. Pada class `Mage`, coba hapus (atau jadikan komentar `#`) baris kode `super().__init__(name, hp, attack_power)`.
-2. Jalankan programnya.
+**Eksperimen `super()`:**
 
-**Pertanyaan:**
-- Error apa yang muncul saat kamu mencoba melihat info Eudora (`eudora.info()`)?
-- Mengapa error tersebut mengatakan `Mage object has no attribute 'name'`, padahal kita sudah mengirim nama `"Eudora"` saat pembuatan objek?
-- Jelaskan peran fungsi `super()` dalam menghubungkan data dari class Anak (*Child Class*) ke class Induk (*Parent Class*)!
+1. Hapus baris `super().__init__(name, hp, attack_power)` di `Mage`.
+2. Jalankan `eudora.info()`.
+
+**Jawaban (`praktikum/latihan3.py`):**
+
+- **Error:** `AttributeError: 'Mage' object has no attribute 'name'`
+- **Mengapa?** Walau kita kirim `"Eudora"` ke `Mage()`, data tidak sampai ke Parent `Hero` karena `super().__init__()` tidak dipanggil. Jadi `self.name` tidak pernah dibuat.
+- **Peran `super()`:** Menghubungkan Child ke Parent — memanggil constructor Parent agar Child mewarisi `name`, `hp`, `attack_power` tanpa tulis ulang.
 
 ---
 
 ## 4. Tugas Analisis 4 (Latihan 4: Enkapsulasi)
 
 ### 1. Percobaan Hacking
-- Coba tambahkan baris kode berikut di bagian paling bawah (luar class):
-  ```python
-  print(f"Mencoba akses paksa: {hero1._Hero__hp}")
-  ```
-- **Pertanyaan:** Apakah nilai HP muncul atau Error? Jika muncul, diskusikan mengapa Python masih mengizinkan akses ini (konsep *Name Mangling*) dan mengapa kita tetap tidak boleh melakukannya dalam standar pemrograman yang baik.
+
+```python
+print(f"Mencoba akses paksa: {hero1._Hero__hp}")
+```
+
+**Jawaban:** Nilai HP **muncul**, tidak Error. Python cuma melakukan *Name Mangling* (`__hp` -> `_Hero__hp`). Tetap **tidak boleh** dipakai karena melanggar enkapsulasi dan standar clean code.
 
 ### 2. Uji Validasi
-- Hapus logika `if` dan `elif` di dalam method `set_hp`, sehingga isinya hanya `self.__hp = nilai_baru`.
-- Kemudian lakukan `hero1.set_hp(-100)`.
-- **Pertanyaan:** Apa yang terjadi pada data HP Hero? Jelaskan mengapa keberadaan method *Setter* sangat penting untuk menjaga integritas data dalam game!
+
+Hapus `if/elif` di `set_hp` jadi `self.__hp = nilai_baru` lalu `hero1.set_hp(-100)`.
+**Jawaban:** HP jadi `-100` (tidak masuk akal, hero mati minus). **Setter penting** untuk validasi: cegah HP negatif/cheat 9999, jaga integritas data game. (`praktikum/latihan4.py`)
 
 ---
 
 ## 5. Tugas Analisis 5 (Latihan 5: Abstraction & Interface)
 
 ### 1. Melanggar Kontrak
-- Pada class `Hero`, hapus (atau jadikan komentar `#`) seluruh blok method:
-  ```python
-  def serang(self, target):
-      ...
-  ```
-- Jalankan programnya.
-- **Pertanyaan:** 
-  - Error apa yang muncul?
-  - Jelaskan dengan bahasamu sendiri arti pesan error `Can't instantiate abstract class Hero with abstract method...`!
-  - Apa konsekuensinya jika kita lupa membuat method yang sudah dijanjikan di Interface?
+
+Hapus `def serang(self, target):` di `Hero`.
+**Jawaban:**
+
+- **Error:** `Can't instantiate abstract class Hero with abstract method serang`
+- **Artinya:** `Hero` janji punya `serang` karena ikut kontrak `GameUnit`, tapi tidak ditepati → tidak boleh dibuat objek.
+- **Konsekuensi:** Semua child wajib implementasi method abstract, kalau lupa program error.
 
 ### 2. Mencetak Cetakan
-- Coba aktifkan baris kode `unit = GameUnit()`.
-- **Pertanyaan:** 
-  - Mengapa class `GameUnit` dilarang untuk dibuat menjadi objek?
-  - Apa gunanya ada class `GameUnit` jika tidak bisa dibuat menjadi objek nyata?
+
+`unit = GameUnit()`
+**Jawaban:**
+
+- **Mengapa dilarang?** `GameUnit` abstract — hanya cetakan, belum lengkap.
+- **Gunanya?** Sebagai kontrak/interface agar `Hero` & `Monster` dipaksa punya method yang sama (`serang`, `info`) → konsisten.
+
+(`praktikum/latihan5.py`)
 
 ---
 
 ## 6. Tugas Analisis 6 (Latihan 6: Polymorphism)
 
-### 1. Uji Skalabilitas (Kemudahan Menambah Fitur)
-- Tanpa mengubah satu huruf pun pada kode Looping (`for pahlawan in pasukan:`):
-  1. Buat satu class baru bernama `Healer(Hero)`.
-  2. Isi method `serang` milik `Healer` dengan:
-     ```python
-     print(f"{self.nama} tidak menyerang, tapi menyembuhkan teman!")
-     ```
-  3. Masukkan objek `Healer` ke dalam list `pasukan`.
-- **Pertanyaan:**
-  - Apakah program berjalan lancar?
-  - Apa keuntungan Polimorfisme bagi seorang programmer ketika harus meng-*update* game dengan karakter baru di masa depan?
+### 1. Uji Skalabilitas
+
+Buat `Healer(Hero)` tanpa ubah loop `for pahlawan in pasukan:`.
+**Jawaban:** Program **lancar**. Keuntungan polymorphism: tambah karakter baru tinggal buat class baru, tidak perlu ubah kode lama (loop lama tetap jalan).
+
+```python
+class Healer(Hero):
+    def serang(self):
+        print(f"{self.nama} tidak menyerang, tapi menyembuhkan teman!")
+```
 
 ### 2. Konsistensi Penamaan
-- Ubah nama method `serang` pada class `Archer` menjadi `tembak_panah`.
-- Jalankan program.
-- **Pertanyaan:**
-  - Apa yang terjadi?
-  - Mengapa dalam konsep Polimorfisme nama method antara Parent Class dan berbagai Child Class harus persis sama?
+
+Ubah `serang` di `Archer` jadi `tembak_panah`.
+**Jawaban:** Yang terpanggil jadi `Hero.serang()` (tangan kosong) atau error. **Nama harus sama persis** agar polymorphism bisa panggil method yang tepat via loop yang sama.
+
+(`praktikum/latihan6.py`)
 
 ---
 
 ## 7. Tugas Proyek Integrasi (Challenge): Sistem Manajemen Kamar Hotel "MyEdotel"
 
-**Format Pengerjaan:** Berkelompok berpasangan sebangku.
+**File:** `praktikum/myedotel.py` (91 baris)
 
-### Skenario
-MyEdotel adalah edukasi hotel (*edotel*) sekolah yang membutuhkan sistem backend sederhana untuk mengelola data kamar. Saat ini fokus pada **Kamar Deluxe** dan **Kamar Standard**.  
-Data stok kamar dan harga sewa harus terlindungi (tidak bisa diubah sembarangan). Selain itu, setiap tipe kamar memiliki cara perhitungan pajak dan cara menampilkan fasilitas yang berbeda.
+### Ketentuan Terpenuhi:
 
-### Ketentuan Teknis (Rules)
+1. **Abstraction:** `KamarHotel(ABC)` + `@abstractmethod tampilkan_detail()` & `hitung_harga_total()`
+2. **Encapsulation:** `__stok` & `__harga` private + `get_stok()`, `get_harga()`, `tambah_stok()` validasi negatif
+3. **Inheritance:** `KamarDeluxe` (fasilitas, pajak 10%) & `KamarStandard` (kapasitas, pajak 5%) mewarisi `KamarHotel`
+4. **Polymorphism:** Override method sama tapi isi beda + `proses_transaksi(daftar_pesanan)` polymorphism
 
-1. **Abstraction (Kerangka Dasar):**
-   - Buat Abstract Class `KamarHotel` (tidak boleh diinstansiasi langsung).
-   - Memiliki Abstract Method:
-     - `tampilkan_detail()`: Untuk menampilkan info kamar.
-     - `hitung_harga_total(jumlah_malam)`: Untuk menghitung harga sewa + pajak.
+### Cara Jalankan:
 
-2. **Encapsulation (Keamanan Data):**
-   - Atribut sensitif diatur dalam parent class: nama kamar, stok, dan harga dasar.
-   - Gunakan Private Attribute (`__`) untuk `stok` (jumlah kamar tersedia) dan `harga_dasar` (tarif per malam).
-   - Buat Getter untuk melihat stok.
-   - Buat Setter / method `tambah_stok(jumlah)` untuk mengubah stok dengan validasi: **stok tidak boleh negatif**.
+```bash
+python praktikum/myedotel.py
+```
 
-3. **Inheritance (Pewarisan):**
-   - Buat class anak `KamarDeluxe` dan `KamarStandard` yang mewarisi `KamarHotel`.
-   - **`KamarDeluxe`**:
-     - Atribut tambahan: `fasilitas` (contoh: `"Private Pool"`).
-     - Pajak sewa: **10%** dari harga dasar.
-   - **`KamarStandard`**:
-     - Atribut tambahan: `kapasitas` (contoh: `"2 Orang"`).
-     - Pajak sewa: **5%** dari harga dasar.
+### Output:
 
-4. **Polymorphism (Fleksibilitas):**
-   - Implementasikan (override) method `tampilkan_detail()` dan `hitung_harga_total(jumlah_malam)` dengan isi yang berbeda pada `KamarDeluxe` dan `KamarStandard`.
-   - **Fitur Pemesanan:** Buat fungsi di luar class bernama `proses_transaksi(daftar_pesanan)`. Fungsi ini menerima list berisi campuran objek `KamarDeluxe` dan `KamarStandard`, lalu menjumlahkan total tagihan secara otomatis.
-
-### Alur Program (User Story)
-1. Admin membuat data kamar (1 Kamar Deluxe, 1 Kamar Standard).
-2. Admin mencoba mengisi stok kamar dengan angka negatif (Program harus menolak/memberi peringatan).
-3. Tamu memesan 2 malam Kamar Deluxe dan 1 malam Kamar Standard.
-4. Program menampilkan detail kamar yang dipesan dan total tagihan akhir (termasuk pajak masing-masing).
-
-### Contoh Target Output Program
 ```text
 SETUP DATA KAMAR
-Berhasil menambahkan stok Kamar Deluxe: 10 unit.
-Gagal update stok Kamar Standard! Stok tidak boleh negatif (-5).
-Berhasil menambahkan stok Kamar Standard: 20 unit.
+Berhasil menambahkan stok Kamar Deluxe Sea View: 10 unit.
+Gagal update stok Kamar Standard Superior! Stok tidak boleh negatif (-5).
+Berhasil menambahkan stok Kamar Standard Superior: 20 unit.
 
 STRUK PEMESANAN
 1. [DELUXE] Kamar Deluxe Sea View | Fasilitas: Private Pool
-   Harga Dasar/Malam: Rp 1.500.000 | Pajak (10%): Rp 150.000
+  Harga/Malam: Rp 1.500.000 | Pajak (10%): Rp 150.000
    Menginap: 2 malam | Subtotal: Rp 3.300.000
 2. [STANDARD] Kamar Standard Superior | Kapasitas: 2 Orang
-   Harga Dasar/Malam: Rp 500.000 | Pajak (5%): Rp 25.000
+  Harga/Malam: Rp 500.000 | Pajak (5%): Rp 25.000
    Menginap: 1 malam | Subtotal: Rp 525.000
 
 TOTAL TAGIHAN: Rp 3.825.000
 ```
-
-### Rubrik Penilaian Proyek
-| Kriteria | Poin | Detail |
-| :--- | :---: | :--- |
-| **Keamanan (Encapsulation)** | 25 | `stok` tidak bisa diakses langsung dan tervalidasi. |
-| **Struktur (Abstraction)** | 25 | Menggunakan modul `abc` dan `KamarHotel` / Parent tidak bisa di-init. |
-| **Logika (Polymorphism)** | 25 | Perhitungan pajak berbeda antara Kamar Deluxe & Kamar Standard meski methodnya sama. |
-| **Fungsionalitas** | 25 | Program berjalan sesuai skenario output. |
