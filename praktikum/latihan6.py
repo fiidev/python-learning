@@ -1,36 +1,37 @@
-# Parent Class
+# Latihan 6: Polymorphism - Sesimple mungkin
 class Hero:
     def __init__(self, nama):
         self.nama = nama
-
     def serang(self):
-        print("Hero menyerang dengan tangan kosong.")
+        print("Hero menyerang tangan kosong.")
 
-# Child Class 1
 class Mage(Hero):
     def serang(self):
-        print(f"{self.nama} (Mage) menembakkan Bola Api! Boom!")
+        print(f"{self.nama} (Mage) Bola Api! Boom!")
 
-# Child Class 2
 class Archer(Hero):
     def serang(self):
-        print(f"{self.nama} (Archer) memanah dari jauh! Jleb!")
+        print(f"{self.nama} (Archer) Panah! Jleb!")
 
-# Child Class 3
 class Fighter(Hero):
     def serang(self):
-        print(f"{self.nama} (Fighter) memukul dengan pedang! Slash!")
+        print(f"{self.nama} (Fighter) Pedang! Slash!")
 
-# --- Penerapan Polymorphism
-# Kita punya daftar hero campuran
-pasukan = [
-    Mage("Eudora"),
-    Archer("Miya"),
-    Fighter("Zilong"),
-    Mage("Gord")
-]
+# Tugas 6.1: Class baru tanpa ubah looping
+class Healer(Hero):
+    def serang(self):
+        print(f"{self.nama} tidak menyerang, tapi menyembuhkan teman!")
+
+pasukan = [Mage("Eudora"), Archer("Miya"), Fighter("Zilong"), Mage("Gord"), Healer("Angela")]
 
 print("--- PERANG DIMULAI ---")
-# Satu perintah loop, tapi respon berbeda-beda (Polymorphism)
 for pahlawan in pasukan:
     pahlawan.serang()
+
+# Jawaban 6.1: Program lancar! Keuntungan polymorphism = tambah karakter baru
+# tidak perlu ubah looping lama, cukup buat class baru.
+
+# Tugas 6.2: Jika Archer method diubah jadi tembak_panah
+# Error: Archer tidak override serang, jadi pakai serang() milik Parent (tangan kosong)
+# atau jika loop panggil tembak_panah akan error.
+# Jawaban: Nama method harus SAMA agar polymorphism berjalan.
